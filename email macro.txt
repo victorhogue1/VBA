@@ -1,0 +1,88 @@
+Dim olAttachment As Object
+Dim objMsg As Object
+Dim objSelection As Outlook.Selection
+
+Sub OpenAttachment()
+    
+    
+    On Error Resume Next
+    
+    partPath = "C:\emailTemp\"
+    
+    'MsgBox Outlook.ActiveExplorer.Selection.Item(1).Subject
+    
+    If Outlook.ActiveExplorer.Selection.Item(1).Class = olMail Then
+    
+        For Each olAttachment In Outlook.ActiveExplorer.Selection.Item(1).Attachments
+            'Save the attachment
+            
+            proceedOn = "yes"
+            
+            extentions = Array(".jpg", ".gif", ".htm", ".png")
+            
+            For Each Item In extentions
+                If InStr(olAttachment.FileName, Item) Then
+                    proceedOn = "no"
+               End If
+            Next
+            
+            If proceedOn = "yes" Then
+                preName = olAttachment.FileName
+                preName = Replace(preName, " ", "")
+                preName = Replace(preName, "&", "")
+                preName = Replace(preName, "(", "")
+                preName = Replace(preName, ")", "")
+                
+                finalName = preName
+                
+                fullPath = partPath & finalName
+                olAttachment.SaveAsFile fullPath
+                
+                runThis = "cmd /C " & fullPath
+                'MsgBox runThis
+                
+                Set wshshell = CreateObject("WScript.Shell")
+                
+                wshshell.Run (runThis), 0, False
+                
+                'Dim oExec As Object
+                
+                'Set oExec = wshshell.exec(runThis)
+                'oExec.Close
+                wshshell = Nothing
+                'MsgBox olAttachment.FileName
+            End If
+        Next
+        
+    
+    End If
+    'Application.CommandBars.ExecuteMso ("Open")
+    sSleep (2)
+SendKeys "^{HOME}", True
+SendKeys "^o", True
+sSleep (2)
+SendKeys "+{TAB}+{TAB}", True
+
+
+
+
+    
+    
+End Sub
+
+
+
+
+Sub sSleep(seconds)
+    'pause script about 1 second
+    Set oWSShell = CreateObject("Wscript.Shell")
+    cmd = "%COMSPEC% /c ping -n " & seconds & " 127.0.0.1>nul"
+    oWSShell.Run cmd, 0, 1
+    oWSShell = ""
+End Sub
+
+
+request off 8/18. 
+
+
+TPIN Mansarovar [464] [MNSVR]
